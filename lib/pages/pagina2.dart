@@ -59,22 +59,18 @@ void initState(){
                fontWeight: FontWeight.bold,
              ),
              ),
+             onTap: (){
+             Navigator.popAndPushNamed(context, '/post/TextEdit');
+
+            //  _estudo = _estudos[index];
+
+
+             },
             ),
             Divider(
               height: 5.0,
             ),
-            ListTile(
-              leading: Icon(Icons.library_books,
-              color:Colors.blueGrey,
-              size: 40.5,
-              ),
-             title: Text('Arlindo',
-             style: TextStyle(
-               color: Colors.black87,
-               fontWeight: FontWeight.bold,
-             ),
-             ),
-            ),
+         
           ],
         );
       },
@@ -96,7 +92,7 @@ class EstudoTexto extends StatefulWidget {
 class _EstudoTextoState extends State<EstudoTexto> {
   Estudo _estudo = Estudo();
 DatabaseHelper _dbHelper;
-List<Estudo> _estudos = [];
+// List<Estudo> _estudos = [];
 
 @override 
 void initState(){
@@ -104,12 +100,21 @@ void initState(){
   setState(() {
     _dbHelper = DatabaseHelper.instance; 
   });
+     _controller = TextEditingController(
+       text: _estudo.titulo != null ? _estudo.titulo:'');
+      _controller2 = TextEditingController(
+        text: _estudo.texto != null? _estudo.texto:''
+      );
+
+
 }
 final _texKey = GlobalKey<FormFieldState>();
 final _texKey2 = GlobalKey<FormFieldState>();
 
-  final _controller = TextEditingController();
-    final _controller2 = TextEditingController();
+  var _controller;
+  //  = TextEditingController();
+    var _controller2;
+    //  = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +156,8 @@ final _texKey2 = GlobalKey<FormFieldState>();
             hintText: 'A Parabola do Semeador'
             ),
           onSubmitted: (val) => setState( ( ) => this._estudo.titulo=val ),
-          
+          cursorColor: Colors.black26,
+          showCursor: true,
         ),
         TextField(
           key: _texKey2,
@@ -174,7 +180,7 @@ final _texKey2 = GlobalKey<FormFieldState>();
       
       child: Text('OK'),
       onPressed: () {
-        Navigator.pushNamed(context, '/estudoBiblico');
+        Navigator.popAndPushNamed(context, '/estudoBiblico');
        return _onOk();
         },
     ),
@@ -187,35 +193,32 @@ final _texKey2 = GlobalKey<FormFieldState>();
 
   }
 
-  _refreshEstudo() async{
-  List<Estudo> x = await _dbHelper.fetchEstudo();
-  setState(() {
-    _estudos = x;
-  });
-}
+//   _refreshEstudo() async{
+//   List<Estudo> x = await _dbHelper.fetchEstudo();
+//   setState(() {
+//     _estudos = x;
+//   });
+// }
 
   _onOk()async{
-    var form = _texKey2.currentState;
-    var form2= _texKey.currentState;
-    if(form.validate() || form2.validate()){
-      form.save();
-      form2.save();
+    _estudo.titulo= _controller.text;
+     _estudo.texto = _controller2.text;
+ 
    if(_estudo.id==null) await _dbHelper.insertEstudo(_estudo);
    else
    await _dbHelper.updateEstudo(_estudo);
-   _refreshEstudo();
-   _resetTex();
+  //  _refreshEstudo();
+  //  _resetTex();
     }
-  }
+  // }
 
-  _resetTex(){
-    setState(() {
-      _texKey.currentState.reset();
-      _texKey2.currentState.reset();
-      _controller.clear();
-      _controller2.clear();
-      _estudo.id=null;
-    });
-  }
+  // _resetTex(){
+  //   setState(() {
+      
+  //     _controller.clear();
+  //     _controller2.clear();
+  //     _estudo.id=null;
+  //   });
+  // }
 }
 
